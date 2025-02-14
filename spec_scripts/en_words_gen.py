@@ -7,10 +7,10 @@ nltk.download("words")
 word_list = [word.lower() for word in words.words() if 3 <= len(word) <= 10]
 
 # Генерируем 100000 случайных слов (с возможными повторениями)
-generated_words = random.choices(word_list, k=1_000)
+generated_words = random.choices(word_list, k=10_000_000)
 
 # Сохраняем в файл
-with open("../source/english_words_1k.txt", "w") as f:
+with open("../source/bigsource/english_words_10kk.txt", "w") as f:
     f.write("\n".join(generated_words))
 
-print("Файл english_words_100k.txt сгенерирован!")
+print("Файл сгенерирован!")
