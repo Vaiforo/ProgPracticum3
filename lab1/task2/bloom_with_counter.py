@@ -20,24 +20,27 @@ class BloomFilterCounter:
 
     def remove(self, element):
         find_indexes = []
+        counter = 0
         for prime in self.primes:
             index = self.hash_function(element, prime)
-            if self.counters[index] > 0:
-                find_indexes.append(index)
-        if len(find_indexes) == self.k:
+            find_indexes.append(index)
+            counter += self.counters[index]
+        if counter >= self.k:
             for index in find_indexes:
-                if self.counters[index] > 0:
-                    self.counters[index] -= 1
+                self.counters[index] -= 1
             return True
         return False
 
 
     def check(self, element):
+        indexes = {}
         for prime in self.primes:
             index = self.hash_function(element, prime)
-            if self.counters[index] == 0:
-                return False
-        return True
+            if index not in indexes:
+                indexes[index] = 1
+            else:
+                indexes[index] += 1
+
 
     def union(self, other):
         if self.m != other.m or self.k != other.k:
