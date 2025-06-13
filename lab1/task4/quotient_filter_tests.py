@@ -1,56 +1,58 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import random
+from typing import List
 
-from quotient_filter import QuotientFilter
+from quotient_filter import QuotientFilterStruct
 
 
 def false_positive_rate(qf, train_words, test_words):
     false_positives = 0
     for word in test_words:
-        if qf.query(word) and word not in train_words:
+        if qf.contains(word) and word not in train_words:
             false_positives += 1
     return (false_positives / len(test_words)) * 100
 
 
-with open('english_words_10k.txt', 'r') as file:
-    words = [line.strip() for line in file.readlines()]
-train_words = words[:5000]
-test_words = words[5000:]
+def test_fpr(q_bits: int, r_bits: int, items=1000, tests=5000) -> float:
+    qf = QuotientFilterStruct(q_bits, r_bits)
 
-q_values = [4, 6, 8, 10, 12]
-r_values = [4, 6, 8, 10, 12]
+    for i in range(min(items, (1 << q_bits) - 1)):
+        qf.add(str(i))
 
-results = {}
+    false_pos = 0
+    for _ in range(tests):
+        if qf.contains(str(random.randint(10 ** 6, 10 ** 7))):
+            false_pos += 1
 
-for q in q_values:
-    for r in r_values:
-        qf = QuotientFilter(q, r)
-        for word in train_words:
-            qf.insert(word)
-        fp_rate = false_positive_rate(qf, train_words, test_words)
-        results[(q, r)] = fp_rate
+    return false_pos / tests
 
-df = pd.DataFrame.from_dict(results, orient='index', columns=['False positive rate (%)'])
-df.index = pd.MultiIndex.from_tuples(df.index, names=['q', 'r'])
-print("Таблица результатов:")
-print(df)
 
-fixed_r = 8
-fp_rates_q = [results[(q, fixed_r)] for q in q_values]
-plt.figure(figsize=(8, 6))
-plt.plot(q_values, fp_rates_q, marker='o')
-plt.title(f'Зависимость FP rate от q (r={fixed_r})')
-plt.xlabel('q (количество бит для частного)')
-plt.ylabel('Процент FP (%)')
-plt.grid(True)
-plt.savefig('fp_rate_vs_q.png')
+def solve(q_options: List[int], r_options: List[int]):
+    results = []
 
-fixed_q = 8
-fp_rates_r = [results[(fixed_q, r)] for r in r_values]
-plt.figure(figsize=(8, 6))
-plt.plot(r_values, fp_rates_r, marker='o')
-plt.title(f'Зависимость FP rate от r (q={fixed_q})')
-plt.xlabel('r (количество бит для остатка)')
-plt.ylabel('Процент FP (%)')
-plt.grid(True)
-plt.savefig('fp_rate_vs_r.png')
+    for q in q_options:
+        for r in r_options:
+            print(f"Тестируем q={q}, r={r}...")
+            fpr = test_fpr(q, r)
+            results.append({'q': q, 'r': r, 'FPR': fpr})
+
+    df = pd.DataFrame(results)
+    print("\nРезультаты тестов:")
+    print(df)
+
+    for q in q_options:
+        subset = df[df['q'] == q]
+        plt.plot(subset['r'], subset['FPR'], label=f'q={q}', marker='o')
+
+    plt.xlabel('Биты остатка (r)')
+    plt.ylabel('Вероятность ошибки')
+    plt.title('Зависимость FPR от параметров')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
+q_params = [8, 10, 12]
+r_params = [4, 6, 8, 10]
+solve(q_params, r_params)
