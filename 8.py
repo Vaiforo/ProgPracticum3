@@ -1,25 +1,20 @@
 import random
 import unittest
 
-# Глобальные реестры классов растений и животных
 REGISTERED_PLANTS = {}
 REGISTERED_ANIMALS = {}
 
-class EcoMeta(type):
-    """
-    Метакласс для регистрации и динамического добавления поведения по DSL.
-    """
 
+class EcoMeta(type):
     def __new__(mcs, classname, bases, attrs):
         cls = super().__new__(mcs, classname, bases, attrs)
 
         growth_dsl = attrs.get('GROWTH_DSL')
         behavior_dsl = attrs.get('BEHAVIOR_DSL')
 
-        # Регистрация классов
         if growth_dsl:
             REGISTERED_PLANTS[classname] = cls
-            rules = {k.strip(): float(v.strip()) for k,v in
+            rules = {k.strip(): float(v.strip()) for k, v in
                      (item.split(':') for item in growth_dsl.split(','))}
 
             @classmethod
@@ -29,7 +24,7 @@ class EcoMeta(type):
 
             def spread(self, world):
                 if random.random() < self.growth_prob:
-                    neighbors = [(1,0), (-1,0), (0,1), (0,-1)]
+                    neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                     random.shuffle(neighbors)
                     for dx, dy in neighbors:
                         nx, ny = self.x + dx, self.y + dy
@@ -42,7 +37,6 @@ class EcoMeta(type):
 
         if behavior_dsl:
             REGISTERED_ANIMALS[classname] = cls
-            # Пример парсинга поведения: morning:eat=2;evening:eat=0.5;default:eat=1
             rules = {}
             for part in behavior_dsl.split(';'):
                 timekey, action = part.split(':')
@@ -59,14 +53,14 @@ class EcoMeta(type):
             cls.eat = eat
 
             def move(self, world):
-                directions = [(1,0), (-1,0), (0,1), (0,-1)]
+                directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                 dx, dy = random.choice(directions)
                 world.move_entity(self, self.x + dx, self.y + dy)
             cls.move = move
 
             def reproduce(self, world):
                 if random.random() < 0.05:
-                    neighbors = [(1,0), (-1,0), (0,1), (0,-1)]
+                    neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                     random.shuffle(neighbors)
                     for dx, dy in neighbors:
                         nx, ny = self.x + dx, self.y + dy
@@ -86,13 +80,13 @@ class EcoMeta(type):
         return cls
 
 
-# Базовые классы с метаклассом
 class Plant(metaclass=EcoMeta):
     ENTITY_TYPE = 'plant'
 
     def __init__(self):
         self.x = None
         self.y = None
+
 
 class Animal(metaclass=EcoMeta):
     ENTITY_TYPE = 'animal'
@@ -103,26 +97,26 @@ class Animal(metaclass=EcoMeta):
         self.hunger = 0
 
 
-# Конкретные растения с DSL
 class Lumiere(Plant):
     GROWTH_DSL = "morning:0.3,day:0.3,evening:0.0,night:0.0"
 
+
 class Obscurite(Plant):
     GROWTH_DSL = "night:0.3,evening:0.3,morning:0.0,day:0.0"
+
 
 class Demi(Plant):
     GROWTH_DSL = "morning:0.15,evening:0.15,day:0.05,night:0.05"
 
 
-# Конкретные животные с DSL
 class Pauvre(Animal):
     BEHAVIOR_DSL = "morning:eat=2;evening:eat=0.5;default:eat=1"
+
 
 class Malheureux(Animal):
     BEHAVIOR_DSL = "morning:eat=1;evening:eat=1;default:eat=0.5"
 
 
-# Класс мира
 class World:
     def __init__(self, width, height):
         self.width = width
@@ -150,15 +144,12 @@ class World:
         current_time = self.times[self.time_idx]
         print(f"=== Tick, Time: {current_time} ===")
 
-        # Адаптируем классы под время
         for cls in list(REGISTERED_PLANTS.values()) + list(REGISTERED_ANIMALS.values()):
             cls.adapt_to_time(current_time)
 
-        # Действия всех объектов
         for entity in list(self.entities):
             entity.act(self)
 
-        # Переключаем время суток
         self.time_idx = (self.time_idx + 1) % len(self.times)
 
     def __str__(self):
@@ -174,7 +165,6 @@ class World:
         return '\n'.join(rows)
 
 
-# Тесты
 class EcosystemMetaTests(unittest.TestCase):
 
     def test_registration(self):
@@ -192,13 +182,12 @@ class EcosystemMetaTests(unittest.TestCase):
         Pauvre.adapt_to_time('evening')
         self.assertAlmostEqual(Pauvre.eat_amount, 0.5)
 
+
 if __name__ == "__main__":
     unittest.main(exit=False)
 
-    # Демонстрация работы симуляции
     w = World(8, 4)
 
-    # Добавим растения и животных
     w.add_entity(Lumiere(), 1, 1)
     w.add_entity(Obscurite(), 2, 2)
     w.add_entity(Demi(), 3, 3)
