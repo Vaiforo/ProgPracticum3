@@ -5,6 +5,7 @@ import unittest
 REGISTERED_PLANTS = {}
 REGISTERED_ANIMALS = {}
 
+
 class EcoMeta(type):
     """
     Метакласс для регистрации и динамического добавления поведения по DSL.
@@ -19,7 +20,7 @@ class EcoMeta(type):
         # Регистрация классов
         if growth_dsl:
             REGISTERED_PLANTS[classname] = cls
-            rules = {k.strip(): float(v.strip()) for k,v in
+            rules = {k.strip(): float(v.strip()) for k, v in
                      (item.split(':') for item in growth_dsl.split(','))}
 
             @classmethod
@@ -29,7 +30,7 @@ class EcoMeta(type):
 
             def spread(self, world):
                 if random.random() < self.growth_prob:
-                    neighbors = [(1,0), (-1,0), (0,1), (0,-1)]
+                    neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                     random.shuffle(neighbors)
                     for dx, dy in neighbors:
                         nx, ny = self.x + dx, self.y + dy
@@ -59,14 +60,14 @@ class EcoMeta(type):
             cls.eat = eat
 
             def move(self, world):
-                directions = [(1,0), (-1,0), (0,1), (0,-1)]
+                directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                 dx, dy = random.choice(directions)
                 world.move_entity(self, self.x + dx, self.y + dy)
             cls.move = move
 
             def reproduce(self, world):
                 if random.random() < 0.05:
-                    neighbors = [(1,0), (-1,0), (0,1), (0,-1)]
+                    neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                     random.shuffle(neighbors)
                     for dx, dy in neighbors:
                         nx, ny = self.x + dx, self.y + dy
@@ -94,6 +95,7 @@ class Plant(metaclass=EcoMeta):
         self.x = None
         self.y = None
 
+
 class Animal(metaclass=EcoMeta):
     ENTITY_TYPE = 'animal'
 
@@ -103,20 +105,21 @@ class Animal(metaclass=EcoMeta):
         self.hunger = 0
 
 
-# Конкретные растения с DSL
 class Lumiere(Plant):
     GROWTH_DSL = "morning:0.3,day:0.3,evening:0.0,night:0.0"
 
+
 class Obscurite(Plant):
     GROWTH_DSL = "night:0.3,evening:0.3,morning:0.0,day:0.0"
+
 
 class Demi(Plant):
     GROWTH_DSL = "morning:0.15,evening:0.15,day:0.05,night:0.05"
 
 
-# Конкретные животные с DSL
 class Pauvre(Animal):
     BEHAVIOR_DSL = "morning:eat=2;evening:eat=0.5;default:eat=1"
+
 
 class Malheureux(Animal):
     BEHAVIOR_DSL = "morning:eat=1;evening:eat=1;default:eat=0.5"
@@ -191,6 +194,7 @@ class EcosystemMetaTests(unittest.TestCase):
         self.assertAlmostEqual(Lumiere.growth_prob, 0.3)
         Pauvre.adapt_to_time('evening')
         self.assertAlmostEqual(Pauvre.eat_amount, 0.5)
+
 
 if __name__ == "__main__":
     unittest.main(exit=False)

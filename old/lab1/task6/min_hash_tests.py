@@ -33,7 +33,8 @@ for k in k_values:
     err = error_rate(mh, set1, set2)
     results[k] = err
 
-df = pd.DataFrame.from_dict(results, orient='index', columns=['Error Rate (%)'])
+df = pd.DataFrame.from_dict(results, orient='index',
+                            columns=['Error Rate (%)'])
 df.index.name = 'k'
 print("Таблица результатов:")
 print(df)
@@ -44,4 +45,4 @@ plt.title('Зависимость ошибки от k')
 plt.xlabel('k (количество хеш-функций)')
 plt.ylabel('Относительная ошибка (%)')
 plt.grid(True)
-plt.savefig('error_rate_vs_k.png')
+plt.show()

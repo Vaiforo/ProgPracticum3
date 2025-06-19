@@ -20,7 +20,7 @@ with open('english_words_10k.txt', 'r') as file:
 train_words = words[:5000]
 test_words = words[5000:]
 
-m_values = [1000, 2000, 3000, 4000, 5000]
+m_values = [5000, 10000, 15000, 20000, 25000]
 k_values = [1, 2, 3, 4, 5]
 
 results = {}
@@ -42,7 +42,7 @@ plt.title(f'Зависимость ложноположительных сраб
 plt.xlabel('m (размер битового массива)')
 plt.ylabel('Процент ложноположительных срабатываний (%)')
 plt.grid(True)
-plt.savefig('fp_rate_vs_m.png')
+plt.show()
 
 fixed_m = 5000
 fp_rates_k = [results[(fixed_m, k)] for k in k_values]
@@ -52,4 +52,4 @@ plt.title(f'Зависимость ложноположительных сраб
 plt.xlabel('k (количество хеш-функций)')
 plt.ylabel('Процент ложноположительных срабатываний (%)')
 plt.grid(True)
-plt.savefig('fp_rate_vs_k.png')
+plt.show()

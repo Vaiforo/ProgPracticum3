@@ -5,7 +5,7 @@ class Hasher:
     """Генератор хешей для строк"""
 
     def __init__(self, initial_seed: int, output_bits: int):
-        self.seed = initial_seed  # Начальное значение для хеширования
+        self.seed = initial_seed  
         self.output_bits = output_bits  # Сколько бит должен содержать итоговый хеш
         self.modulus = 2 ** (output_bits + 5)  # Ограничиваем диапазон хеша
 

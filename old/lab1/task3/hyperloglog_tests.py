@@ -31,4 +31,4 @@ plt.title('Зависимость относительной ошибки от b
 plt.xlabel('b (количество бит для регистров)')
 plt.ylabel('Относительная ошибка (%)')
 plt.grid(True)
-plt.savefig('relative_error_vs_b.png')
+plt.show()
