@@ -5,7 +5,7 @@ import pickle
 from collections import defaultdict
 from tank_env import TankEnv
 
-TOTAL_EPISODES = 500
+TOTAL_EPISODES = 1000
 MAX_STEPS_PER_EPISODE = 200
 LEARNING_RATE = 0.1
 DISCOUNT_FACTOR = 0.99

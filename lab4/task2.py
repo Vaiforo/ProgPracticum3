@@ -14,7 +14,7 @@ from env_common import (
 )
 
 FPS = 30
-MAX_STEPS = 500
+MAX_STEPS = 1000
 
 pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
