@@ -44,7 +44,7 @@ plt.title(f'Зависимость Error Rate от d (w={fixed_w})')
 plt.xlabel('d (количество хеш-функций)')
 plt.ylabel('Процент ошибок (%)')
 plt.grid(True)
-plt.savefig('error_rate_vs_d.png')
+plt.show()
 
 fixed_d = 3
 err_rates_w = [results[(fixed_d, w)] for w in w_values]
@@ -54,4 +54,4 @@ plt.title(f'Зависимость Error Rate от w (d={fixed_d})')
 plt.xlabel('w (ширина массива)')
 plt.ylabel('Процент ошибок (%)')
 plt.grid(True)
-plt.savefig('error_rate_vs_w.png')
+plt.show()

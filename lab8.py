@@ -1,6 +1,7 @@
 import random
 import unittest
 
+# Глобальные реестры классов растений и животных
 REGISTERED_PLANTS = {}
 REGISTERED_ANIMALS = {}
 
